@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Join SEO-Pilot</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body, html {
+            font-family: 'Space Mono', monospace;
+            background-color: #000;
+        }
+        .form-input {
+            background-color: #000;
+            border: 1px solid #fff;
+            color: #fff;
+            padding: 10px;
+            width: 100%;
+        }
+        .form-input::placeholder {
+            color: #ccc;
+        }
+        .form-input:focus {
+            outline: none;
+            border-color: #a78bfa;
+        }
+        .btn-primary {
+            background-color: #fff;
+            color: #000;
+            padding: 12px;
+            text-align: center;
+            font-weight: bold;
+            border: 1px solid #fff;
+            width: 100%;
+        }
+        .btn-primary:hover {
+            background-color: #e5e5e5;
+        }
+    </style>
+</head>
+<body class="bg-black text-white flex items-center justify-center min-h-screen p-4">
+
+    <div class="w-full max-w-sm">
+        <div class="text-center mb-10">
+            <div class="inline-flex items-center justify-center w-16 h-16 bg-white mb-6" style="image-rendering: pixelated;">
+                <img alt="SEO-Pilot Logo" loading="lazy" width="48" height="48"
+                    src="https://img.icons8.com/ios/50/000000/search-engine-optimization.png">
+            </div>
+            <h1 class="text-3xl font-bold text-white mb-2">Join SEO-Pilot</h1>
+            <p class="text-gray-400">Create your account to get started</p>
+        </div>
+
+        <form id="signup-form" class="space-y-6">
+            <div>
+                <label for="email" class="block text-sm text-gray-300 mb-2">Email address</label>
+                <input id="email" type="email" placeholder="Enter your email" required class="form-input">
+            </div>
+
+            <div>
+                <label for="password" class="block text-sm text-gray-300 mb-2">Password</label>
+                <input id="password" type="password" placeholder="Enter your password" required class="form-input">
+            </div>
+
+            <button type="submit" class="btn-primary">CREATE ACCOUNT</button>
+        </form>
+
+        <div class="text-center mt-6">
+            <p class="text-gray-400">
+                Already have an account? 
+                <a href="signin.html" class="text-white font-semibold hover:underline">Sign in</a>
+            </p>
+        </div>
+
+        <div class="mt-10 text-center">
+            <p class="text-gray-500 text-sm">Automate your SEO with SEO-Pilot</p>
+        </div>
+    </div>
+
+    <!-- JavaScript for redirection -->
+    <script>
+        document.getElementById('signup-form').addEventListener('submit', function(event) {
+            // Prevent the default form submission
+            event.preventDefault();
+            
+            // Redirect to the dashboard page
+            // In a real application, you would handle form validation and API calls here first.
+            window.location.href = 'dashboard.html';
+        });
+    </script>
+
+</body>
+</html>

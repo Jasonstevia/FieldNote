@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - SEO-Pilot</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Space Mono', monospace; }
+        .custom-scrollbar::-webkit-scrollbar { width: 8px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #f1f5f9; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #9ca3af; border-radius: 4px; }
+        .modal { display: none; }
+    </style>
+</head>
+<body>
+    <!-- Main App Structure -->
+    <div class="h-screen bg-white text-black font-mono relative overflow-hidden">
+        <!-- Sidebar -->
+        <aside class="absolute left-0 top-0 w-80 h-full border-r-2 border-black bg-gray-50 flex flex-col z-20">
+            <div class="p-4 border-b-2 border-black flex-shrink-0"><div class="flex items-center"><img alt="SEO-Pilot Logo" loading="lazy" width="32" height="32" src="https://img.icons8.com/ios/50/000000/search-engine-optimization.png"><h1 class="text-xl font-bold ml-3">SEO-Pilot</h1></div></div>
+            <div class="p-4 flex-1 flex flex-col overflow-hidden"><h2 class="text-lg font-bold mb-4 flex-shrink-0">SEO Projects</h2><div id="projects-list" class="flex-1 overflow-y-auto custom-scrollbar"><p class="text-sm text-gray-500">No projects yet.</p></div></div>
+            <div class="p-4 border-t-2 border-black flex-shrink-0"><div class="flex items-center justify-between gap-2"><div class="text-xs"><p class="font-semibold truncate max-w-[7rem]">new-user</p><p class="text-gray-600 truncate max-w-[7rem]">user@email.com</p></div><div class="flex gap-2"><button class="px-3 py-1 text-xs border-2 border-black rounded hover:bg-black hover:text-white">Profile</button><button class="px-3 py-1 text-xs border-2 border-black rounded hover:bg-black hover:text-white">Sign out</button></div></div></div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main id="main-content" class="ml-80 h-full flex items-center justify-center p-8">
+            <div id="initial-view" class="flex flex-col items-center justify-center h-full text-center px-4">
+                <h2 class="text-3xl font-bold text-black mb-3">Start Your First SEO Audit</h2>
+                <p class="text-gray-600 text-lg max-w-md mb-8">Enter a website URL to begin the automated analysis.</p>
+                <form id="analysis-form" class="w-full max-w-xl"><input id="url-input" name="url" type="url" required placeholder="https://your-website.com" class="w-full px-4 py-3 bg-white text-black border-2 border-black focus:outline-none font-mono"><button type="submit" class="mt-6 w-full px-6 py-3 bg-black text-white font-bold rounded-md shadow-lg hover:bg-gray-800">Analyze Website</button></form>
+            </div>
+            <!-- FIXED: The 'flex' class is removed from the initial HTML to resolve the conflict. -->
+            <div id="chat-container" class="hidden w-full h-full flex-col">
+                <header class="flex items-center justify-between px-4 py-2 border-b-2 border-black flex-shrink-0"><h3 id="chat-header" class="font-bold">SEO Audit</h3></header>
+                <div id="chat-messages" class="flex-1 overflow-y-auto p-6 space-y-6 custom-scrollbar"></div>
+                <div class="p-4 border-t-2 border-black"><form id="chat-form" class="flex items-center space-x-2"><input id="chat-input" type="text" placeholder="Type 'Yes' to continue..." class="flex-1 w-full px-4 py-2 bg-white text-black border-2 border-black focus:outline-none font-mono" autocomplete="off"><button type="submit" class="px-6 py-3 bg-black text-white font-bold rounded-md hover:bg-gray-800">Send</button></form></div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modals (No changes here) -->
+    <div id="review-modal" class="modal fixed inset-0 bg-black bg-opacity-50 z-30 flex items-center justify-center p-4">
+        <div class="bg-white border-2 border-black rounded-lg w-full max-w-6xl max-h-[90vh] flex flex-col"><div class="p-4 border-b-2 border-black flex justify-between items-center"><h2 class="text-xl font-bold">Review Proposed Changes</h2><button id="close-review-modal" class="font-bold text-2xl">&times;</button></div><div id="review-content" class="p-6 overflow-y-auto"></div></div>
+    </div>
+    <div id="keys-modal" class="modal fixed inset-0 bg-black bg-opacity-50 z-30 flex items-center justify-center p-4">
+        <div class="bg-white border-2 border-black rounded-lg w-full max-w-lg"><div class="p-4 border-b-2 border-black flex justify-between items-center"><h2 class="text-xl font-bold">Provide API Keys & Approve</h2><button id="close-keys-modal" class="font-bold text-2xl">&times;</button></div>
+            <div class="p-6">
+                <form id="keys-form">
+                    <div class="space-y-4">
+                        <p>To connect to <strong id="cms-name">WordPress</strong>, please create an <a href="https://wordpress.org/documentation/article/application-passwords/" target="_blank" class="underline text-blue-600">Application Password</a>.</p>
+                        <div>
+                            <label for="api-key-user" class="block text-sm font-bold">WordPress Username</label>
+                            <input id="api-key-user" type="text" class="w-full mt-1 px-3 py-2 border-2 border-black" placeholder="Your WP admin username">
+                        </div>
+                        <div>
+                            <label for="api-key-password" class="block text-sm font-bold">Application Password</label>
+                            <input id="api-key-password" type="password" class="w-full mt-1 px-3 py-2 border-2 border-black" placeholder="Paste the generated password here (e.g., abcd ... wxyz)">
+                        </div>
+                        <button type="submit" class="mt-4 w-full bg-black text-white font-bold py-3">Approve & Execute Changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // All variable declarations are the same
+            const el = (id) => document.getElementById(id);
+            const analysisForm = el('analysis-form'), chatForm = el('chat-form'), keysForm = el('keys-form');
+            const initialView = el('initial-view'), chatContainer = el('chat-container');
+            const chatMessages = el('chat-messages'), chatInput = el('chat-input'), urlInput = el('url-input');
+            const chatHeader = el('chat-header'), projectsList = el('projects-list');
+            const reviewModal = el('review-modal'), keysModal = el('keys-modal'), reviewContent = el('review-content');
+            let sessionId = null;
+
+            const toggleModal = (modal, show) => modal.style.display = show ? 'flex' : 'none';
+
+            el('close-review-modal').onclick = () => toggleModal(reviewModal, false);
+            el('close-keys-modal').onclick = () => toggleModal(keysModal, false);
+
+            analysisForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const url = urlInput.value;
+                if (!url) return;
+                try {
+                    const response = await fetch('/api/session/start', { method: 'POST' });
+                    sessionId = (await response.json()).session_id;
+                    
+                    // --- THE JAVASCRIPT FIX IS HERE ---
+                    initialView.style.display = 'none'; // Hide the initial form
+                    
+                    // This is the clean, Tailwind-native way to show the chat container
+                    chatContainer.classList.remove('hidden'); // Remove display: none;
+                    chatContainer.classList.add('flex'); // Add display: flex;
+                    
+                    chatHeader.textContent = `SEO Audit: ${new URL(url).hostname}`;
+                    addProjectToSidebar(url, sessionId);
+                    addUserMessage(url);
+                    await sendChatMessage(`analyze: ${url}`);
+                } catch (err) {
+                    alert('Error starting session. Is the backend server running?');
+                }
+            });
+
+            // The rest of the JavaScript file remains exactly the same as before.
+            // No other changes are needed.
+
+            chatForm.addEventListener('submit', async (e) => { e.preventDefault(); const message = chatInput.value.trim(); if (!message) return; addUserMessage(message); chatInput.value = ''; await sendChatMessage(message); });
+            keysForm.addEventListener('submit', async (e) => { e.preventDefault(); const apiKeys = { user: el('api-key-user').value, password: el('api-key-password').value }; if(!apiKeys.user || !apiKeys.password) { alert("Username and Application Password are required."); return; } toggleModal(keysModal, false); await sendChatMessage("internal:execute_with_keys", apiKeys); });
+            chatMessages.addEventListener('click', (e) => { const target = e.target.closest('[data-action]'); if (!target) return; const { action, label } = target.dataset; if (action === 'review_changes') handleReviewChanges(); if (action === 'provide_keys') { el('cms-name').textContent = label.split(' ')[1] || 'CMS'; toggleModal(keysModal, true); } });
+            async function handleReviewChanges() {
+                const res = await fetch(`/api/session/${sessionId}/review`);
+                const data = await res.json();
+                const contextRes = await fetch(`/api/session/${sessionId}/context`);
+                const context = await contextRes.json();
+                let html = '<div>Failed to load review data.</div>';
+                if (data && !data.error && context && context.website) {
+                    const formatHtml = (rawHtml) => rawHtml.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+                    const onPageProposalsHtml = (data.onpage_seo || []).map(proposal => {
+                        const originalPage = context.website.pages.find(p => p.url === proposal.page_url);
+                        return `<div class="mb-4 border-t-2 border-gray-200 pt-2"><h4 class="font-bold">Page: ${proposal.page_url}</h4><p class="text-sm mb-2">Reason: <strong>${proposal.reason}</strong></p><div class="grid grid-cols-2 gap-4"><div><h5 class="font-bold text-center">Before</h5><pre class="bg-gray-100 p-2 text-xs overflow-auto max-h-80 border-2 border-black">${originalPage ? formatHtml(originalPage.html) : 'Original HTML not found.'}</pre></div><div><h5 class="font-bold text-center">After (Proposed Rewrite)</h5><pre class="bg-green-50 p-2 text-xs overflow-auto max-h-80 border-2 border-green-800">${formatHtml(proposal.proposed_html_body)}</pre></div></div><h5 class="font-bold text-center mt-2">Proposed Schema</h5><pre class="bg-blue-50 p-2 text-xs overflow-auto max-h-60 border-2 border-blue-800">${JSON.stringify(proposal.proposed_schema, null, 2)}</pre></div>`;
+                    }).join('');
+                    html = `<div class="mb-6"><h3 class="text-lg font-bold mb-2 border-b-2 border-black">On-Page SEO Full Rewrites</h3>${onPageProposalsHtml || '<p>No on-page proposals available.</p>'}</div><div class="mb-6"><h3 class="text-lg font-bold mb-2 border-b-2 border-black">Meta Tag Optimizations</h3><pre class="bg-gray-100 p-2 text-xs overflow-auto max-h-60 border-2 border-black">${JSON.stringify(data.meta_optimization, null, 2)}</pre></div><div><h3 class="text-lg font-bold mb-2 border-b-2 border-black">Scheduled Blog Drafts</h3><pre class="bg-gray-100 p-2 text-xs overflow-auto max-h-60 border-2 border-black">${JSON.stringify(data.blog_automation, null, 2)}</pre></div>`;
+                }
+                reviewContent.innerHTML = html;
+                toggleModal(reviewModal, true);
+            }
+            function addProjectToSidebar(url, id) { if (projectsList.querySelector('p')) projectsList.innerHTML = ''; const div = document.createElement('div'); div.className = 'p-3 border-2 border-black bg-white rounded-lg cursor-pointer'; div.innerHTML = `<h3 class="font-semibold text-sm truncate">SEO Audit: ${new URL(url).hostname}</h3><p class="text-xs text-gray-600 mt-1">${new Date().toLocaleDateString()}</p>`; projectsList.prepend(div); }
+            function addUserMessage(text) { const messageEl = document.createElement('div'); messageEl.className = 'flex justify-end'; messageEl.innerHTML = `<div class="bg-blue-500 text-white p-3 rounded-lg max-w-lg">${text.replace(/</g, "&lt;").replace(/>/g, "&gt;")}</div>`; chatMessages.append(messageEl); chatMessages.scrollTop = chatMessages.scrollHeight; }
+            function addAgentMessage(agent, text, actions = []) { const messageEl = document.createElement('div'); let formattedText = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>'); let actionButtons = (actions || []).map(a => `<button data-action="${a.type}" data-label="${a.label}" class="mt-2 px-4 py-1 text-sm border-2 border-black rounded hover:bg-black hover:text-white">${a.label}</button>`).join(' '); messageEl.innerHTML = `<div class="flex items-start space-x-3"><div class="flex-shrink-0 h-8 w-8 bg-gray-800 text-white flex items-center justify-center rounded-full font-bold text-sm">${agent.charAt(0).toUpperCase()}</div><div class="bg-gray-100 p-3 rounded-lg max-w-lg"><p>${formattedText}</p><div class="flex flex-wrap gap-2">${actionButtons}</div></div></div>`; chatMessages.append(messageEl); chatMessages.scrollTop = chatMessages.scrollHeight; }
+            async function sendChatMessage(message, apiKeys = null) { const thinkingId = `thinking-${Date.now()}`; const thinkingEl = document.createElement('div'); thinkingEl.id = thinkingId; thinkingEl.innerHTML = `<div class="flex items-start space-x-3"><div class="flex-shrink-0 h-8 w-8 bg-gray-800 text-white flex items-center justify-center rounded-full font-bold text-sm">O</div><div class="bg-gray-100 p-3 rounded-lg"><div class="flex items-center space-x-1"><div class="w-2 h-2 bg-gray-500 rounded-full animate-pulse" style="animation-delay:0s"></div><div class="w-2 h-2 bg-gray-500 rounded-full animate-pulse" style="animation-delay:0.2s"></div><div class="w-2 h-2 bg-gray-500 rounded-full animate-pulse" style="animation-delay:0.4s"></div></div></div></div>`; chatMessages.append(thinkingEl); chatMessages.scrollTop = chatMessages.scrollHeight; try { const body = { message }; if (apiKeys) body.api_keys = apiKeys; const response = await fetch(`/api/session/${sessionId}/chat`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }); document.getElementById(thinkingId)?.remove(); if (!response.ok) throw new Error(`Server responded with ${response.status}`); const data = await response.json(); data.messages.forEach(msg => addAgentMessage(msg.agent, msg.text, msg.actions)); } catch (error) { console.error('Chat error:', error); document.getElementById(thinkingId)?.remove(); addAgentMessage('system', 'Sorry, I encountered an error. Please check the server logs and try again.'); } }
+        });
+    </script>
+</body>
+</html>

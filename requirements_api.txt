@@ -1,0 +1,16 @@
+fastapi>=0.111.0
+uvicorn[standard]>=0.30.0
+pydantic>=2.7.0
+aiofiles>=23.2.1
+# plus the backend deps:
+aiohttp>=3.9.5
+aiolimiter>=1.1.0
+beautifulsoup4>=4.12.3
+lxml>=5.2.2
+tldextract>=5.1.2
+yarl>=1.9.4
+google-generativeai>=0.7.2
+orjson>=3.10.7
+python-slugify>=8.0.4
+requests>=2.31.0
+python-dotenv>=1.0.0
