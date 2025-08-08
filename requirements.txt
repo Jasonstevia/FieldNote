@@ -1,0 +1,18 @@
+# requirements.txt
+
+# Core web server
+fastapi
+uvicorn
+
+# HTTP requests and web scraping
+requests
+aiohttp
+aiolimiter
+beautifulsoup4
+lxml
+tldextract
+yarl
+
+# Google AI
+google-generativeai
+python-dotenv
