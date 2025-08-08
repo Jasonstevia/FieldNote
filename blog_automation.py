@@ -1,18 +1,18 @@
-"""BlogAutomation.py"""
+# blog_automation.py
 
 from pathlib import Path
+import os
 from seo_common import genai_model, llm_enabled, today_iso
 from context_store import load_context, save_context
 
 class BlogAutomation:
-    """Create a daily blog schedule and (optionally) draft content to /drafts.
-Reads topic clusters from ctx["agents"]["topical_map"]["clusters"].
-Does not post to CMS; it only prepares drafts + schedule in context.
-"""
+    """Create a daily blog schedule and (optionally) draft content to /drafts."""
 
-    def __init__(self, out_dir: str = "drafts"):
+    def __init__(self):
         self.name = "blog_automation"
-        self.out_dir = Path(out_dir)
+        # Determine the correct writable directory based on the environment
+        IS_VERCEL = os.environ.get('VERCEL') == '1'
+        self.out_dir = Path('/tmp/drafts' if IS_VERCEL else 'drafts')
         self.out_dir.mkdir(parents=True, exist_ok=True)
 
     def schedule_blogs(self, session_id: str, days: int = 7, generate_drafts: bool = True) -> dict:
@@ -40,20 +40,28 @@ Does not post to CMS; it only prepares drafts + schedule in context.
 
         for i, item in enumerate(queue[:days]):
             date = today_iso()
+            safe_title = item['title'].replace(' ', '-').replace('?', '').replace('/', '').lower()[:60]
+            fname = f"{date}-{safe_title}.md"
+            path = self.out_dir / fname
+            
             entry = {
                 "date": date,
                 "title": item["title"],
                 "cluster": item["cluster"],
                 "keywords": item["keywords"],
-                "status": "scheduled"
+                "status": "scheduled",
+                "draft_path": str(path) # Store the path regardless
             }
+
             if generate_drafts:
                 md = self._draft_markdown(ctx, item, model)
-                fname = f"{date}-{item['title'].replace(' ', '-').lower()[:60]}.md"
-                path = self.out_dir / fname
-                path.write_text(md, encoding="utf-8")
-                entry["draft_path"] = str(path)
-                entry["status"] = "drafted"
+                try:
+                    path.write_text(md, encoding="utf-8")
+                    entry["status"] = "drafted"
+                except Exception as e:
+                    print(f"Error writing draft file to {path}: {e}")
+                    entry["status"] = "schedule_error"
+
             schedule.append(entry)
 
         ctx.setdefault("agents", {}).setdefault("blog_automation", {})["schedule"] = schedule
@@ -62,6 +70,7 @@ Does not post to CMS; it only prepares drafts + schedule in context.
         return {"status": "ok", "scheduled": len(schedule), "schedule": schedule}
 
     def _draft_markdown(self, ctx: dict, item: dict, model):
+        # ... (This function does not need any changes)
         site = ctx.get("website", {}).get("url", "")
         title = item["title"]
         kws = ", ".join(item.get("keywords", []))
