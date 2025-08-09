@@ -1,4 +1,4 @@
-"""onpage_seo.py"""
+# onpage_seo.py
 
 import json
 from bs4 import BeautifulSoup
@@ -29,43 +29,37 @@ class OnPageSEO:
                 continue
 
             soup = BeautifulSoup(original_html, 'html.parser')
-            #Extract image sources for the prompt
-            image_without_alt = [img['src'] for img in soup.find_all('img') if not img.get('alt', '').strip()]
+            # CORRECTED: Use .get('src') to prevent crashes on images without a src attribute.
+            images_without_alt = [img.get('src', '') for img in soup.find_all('img') if img.get('src') and not img.get('alt', '').strip()]
 
-            # The new, more powerful prompt
+            # CORRECTED: The prompt now specifies the correct "@type" for valid JSON-LD schema.
             prompt = f"""
-            You are "FieldNote", an world-class technical SEO expert and web developer.
+            You are "FieldNote", a world-class technical SEO expert and web developer.
             Your task is to completely rewrite the body of a webpage for optimal technical and on-page SEO.
 
             **Analysis Context:**
-            -Page URL: {url}
-            -Business Name: {ctx.get('business', {}).get('name', '')}
-            -Brand Tone: {ctx.get('business', {}).get('constraints', {}).get('brand_tone', 'expert, helpful')}
-            -Image missing alt text: {json.dumps(image_without_alt)}
+            - Page URL: {url}
+            - Business Name: {ctx.get('business', {}).get('name', '')}
+            - Brand Tone: {ctx.get('business', {}).get('constraints', {}).get('brand_tone', 'expert, helpful')}
+            - Images missing alt text: {json.dumps(images_without_alt)}
 
             **Instructions:**
-            1. **Rewrite HTML Body:** Analyze the provided original HTML '<body>'. Rewrite it to be semantically correct and SEO-optimized.
-                -Ensure a single, compelling <h1>.
-                -Structure content logically with <h2>, <h3>, <p>, <ul> etc.
-                -Naturally integrate keywords where appropriate.
-                -Add descriptive 'alt' attributes to all '<img>' tags.
-                -Ensure all links '<a>' are well-formed.
-            
-            2. **Generate Schema:** Based on the content, generate one primary JSON-LD schema block
-            (e.g., Article, FAQPage, Product, LocalBusiness). It should be rich and detailed.
+            1. **Rewrite HTML Body:** Analyze the provided original HTML `<body>`. Rewrite it to be semantically correct and SEO-optimized. Ensure a single, compelling <h1>, logical structure, integrated keywords, and descriptive `alt` attributes for all `<img>` tags.
+            2. **Generate Schema:** Based on the content, generate one primary JSON-LD schema block (e.g., Article, FAQPage, Product). It must be rich and detailed.
 
             **Output Format:**
-            Return a single, minified JSON object with no extra text or markdown.
+            Return a single, minified JSON object with NO extra text or markdown.
             The JSON must have these exact keys:
             {{
                 "reason_for_changes": "A brief, one-sentence explanation of the core improvements made.",
                 "rewritten_html_body": "<body class=...><!-- a complete, single-line string of the new body HTML --></body>",
-                "json_ld_schema": {{ "@context": "https://schema.org", "type": "...", "..." }}
+                "json_ld_schema": {{ "@context": "https://schema.org", "@type": "...", "..." }}
             }}
 
             **Original HTML to analyze:**
-            '''html
+            ```html
             {original_html}
+            ```
             """
             try:
                 resp = model.generate_content(prompt)
@@ -73,29 +67,16 @@ class OnPageSEO:
                 if data.get("rewritten_html_body") and data.get("json_ld_schema"):
                     proposals.append({
                         "page_url": url,
-                        "reason": data.get("reason_for_changes", "Comprehensive technical SEO rewrite"),
-                        # We store the proposal, not the original state. The original is already in context.
+                        "reason": data.get("reason_for_changes", "Comprehensive technical SEO rewrite."),
                         "proposed_html_body": data["rewritten_html_body"],
                         "proposed_schema": data["json_ld_schema"],
                     })
                 else:
-                    # Handle cases where the LLM response is not valid
-                    proposals.append({
-                        "page_url": url,
-                        "error": "LLM failed to generate valid HTML/Schema proposal.",
-                        "raw_response": resp.text
-                    })
+                    proposals.append({"page_url": url, "error": "LLM failed to generate valid HTML/Schema proposal.", "raw_response": resp.text})
             except Exception as e:
-                proposals.append({
-                    "page_url": url,
-                    "error": f"LLM error during analysis: {e}"
-                })
+                proposals.append({"page_url": url, "error": f"LLM error during analysis: {e}"})
+
         ctx.setdefault("agents", {}).setdefault("onpage_seo", {})["proposals"] = proposals
         ctx["agents"]["onpage_seo"]["created_at"] = today_iso()
         save_context(session_id, ctx)
-
-        return {
-            "status": "ok",
-            "count": len([p for p in proposals if 'error' not in p]),
-            "proposals": proposals,
-            }
+        return {"status": "ok", "count": len([p for p in proposals if 'error' not in p]), "proposals": proposals}

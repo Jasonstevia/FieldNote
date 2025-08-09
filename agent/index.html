@@ -3,45 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SEO-Pilot - Automated SEO</title>
+    <title>FieldNote - Autonomous SEO Strategist</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: 'Space Mono', monospace;
         }
-
-        /* --- NEW SLOT ANIMATION STYLES --- */
         .scroller-workflow {
-            height: 2.5rem; /* Corresponds to text-4xl line-height */
+            height: 2.5rem;
             overflow: hidden;
         }
-
         .scroller-workflow span {
             display: block;
             animation: scroll-up-workflow 6s ease-in-out infinite;
         }
-        
         @keyframes scroll-up-workflow {
             0%, 15% { transform: translateY(0); }
             25%, 45% { transform: translateY(-2.5rem); }
             55%, 75% { transform: translateY(-5rem); }
             85%, 100% { transform: translateY(-7.5rem); }
         }
-
-        /* Adjust for smaller screens */
         @media (max-width: 640px) {
-            .scroller-workflow {
-                height: 2rem; /* Corresponds to text-3xl line-height */
-            }
-             @keyframes scroll-up-workflow {
+            .scroller-workflow { height: 2rem; }
+            @keyframes scroll-up-workflow {
                 0%, 15% { transform: translateY(0); }
                 25%, 45% { transform: translateY(-2rem); }
                 55%, 75% { transform: translateY(-4rem); }
                 85%, 100% { transform: translateY(-6rem); }
             }
         }
-        /* --- END OF ANIMATION STYLES --- */
     </style>
 </head>
 <body class="__className_e8ce0c">
@@ -49,10 +40,10 @@
         <header class="border-b-2 border-black sticky top-0 bg-white/80 backdrop-blur-md z-10">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex justify-between items-center">
                 <div class="flex items-center space-x-3">
-                    <img alt="Logo" loading="lazy" width="28" height="28"
+                    <img alt="FieldNote Logo" loading="lazy" width="28" height="28"
                         src="https://img.icons8.com/ios/50/000000/search-engine-optimization.png"
                         style="color: transparent; image-rendering: pixelated;">
-                    <h1 class="text-lg sm:text-xl font-bold">SEO-Pilot</h1>
+                    <h1 class="text-lg sm:text-xl font-bold">FieldNote</h1>
                 </div>
                 <a href="signin.html"
                     class="px-3 sm:px-4 py-2 border-2 border-black text-xs sm:text-sm font-bold hover:bg-black hover:text-white">Sign
@@ -62,34 +53,33 @@
 
         <main>
             <section class="text-center py-16 sm:py-20 px-4 sm:px-6 border-b-2 border-black">
-                <h2 class="text-4xl sm:text-5xl font-bold mb-4">Put Your Website's SEO on Autopilot.</h2>
-                <p class="max-w-3xl mx-auto mb-12 text-base sm:text-lg text-gray-800">SEO-Pilot scrapes your entire
-                    site to automate everything from on-page SEO to content creation and backlinks.</p>
+                <h2 class="text-4xl sm:text-5xl font-bold mb-4">Your Autonomous AI SEO Strategist.</h2>
+                <p class="max-w-3xl mx-auto mb-12 text-base sm:text-lg text-gray-800">FieldNote analyzes your entire digital footprint to build and execute a complete, data-driven SEO strategy.</p>
                 <div class="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-[1fr,auto,1fr] items-center gap-6 sm:gap-8 mb-12">
                     <div class="border-2 border-black p-4 text-left h-full">
-                        <p class="font-bold mb-2 text-center">1. Provide Your Website</p>
+                        <p class="font-bold mb-2 text-center">1. Provide a URL</p>
                         <div class="bg-gray-100 p-3 border-2 border-black">
                             <p class="font-bold">WEBSITE URL:</p>
                             <p class="break-all text-sm mb-2">https://your-business.com</p>
-                            <p class="font-bold">INSTRUCTION:</p>
-                            <p class="text-sm">"Scrape all pages and create a 'context.py' file for full SEO automation."</p>
+                            <p class="font-bold">YOUR GOAL:</p>
+                            <p class="text-sm">"Analyze my website, identify weaknesses, and build a complete plan to improve my organic traffic."</p>
                         </div>
                     </div>
                     <div class="text-3xl sm:text-4xl font-bold text-center lg:hidden">↓</div>
                     <div class="text-4xl sm:text-5xl font-bold text-center hidden lg:block">→</div>
                     <div class="border-2 border-black p-4 text-left h-full">
-                        <p class="font-bold mb-2 text-center">2. Get Your Automated SEO Dashboard</p>
+                        <p class="font-bold mb-2 text-center">2. Receive the Action Plan</p>
                         <div class="bg-gray-100 p-3 border-2 border-black text-sm">
-                            <p class="font-bold">On-Page SEO Analysis</p>
+                            <p class="font-bold">FIELDNOTE'S ANALYSIS:</p>
                             <pre
-                                class="text-xs overflow-x-auto bg-white p-2 my-1 border-2 border-black"><code>- H1 Tags: OK
-- Keyword Density: 2.1%
-- Image Alt Text: 89% Complete</code></pre>
-                            <p class="font-bold mt-3">Automation Tasks</p>
+                                class="text-xs overflow-x-auto bg-white p-2 my-1 border-2 border-black"><code>- SEO Score: 68/100
+- Finding: On-page structure is inconsistent.
+- Finding: Missing topical authority for key subjects.</code></pre>
+                            <p class="font-bold mt-3">PROPOSED ACTIONS:</p>
                             <pre
-                                class="text-xs overflow-x-auto bg-white p-2 mt-1 border-2 border-black"><code>- Generate Meta Descriptions: [Active]
-- Daily Blog Post (AI): [Active]
-- Backlink Outreach: [Pending]</code></pre>
+                                class="text-xs overflow-x-auto bg-white p-2 mt-1 border-2 border-black"><code>- Rewrite HTML on 12 pages for technical SEO.
+- Generate and publish 7 blog posts.
+- Optimize all meta descriptions for higher CTR.</code></pre>
                         </div>
                     </div>
                 </div>
@@ -97,7 +87,6 @@
             
             <section class="py-16 sm:py-20 px-4 sm:px-6 border-b-2 border-black bg-gray-50">
                 <div class="max-w-7xl mx-auto">
-                    <!-- === HEADING REPLACED WITH SLOT ANIMATION === -->
                     <div class="text-3xl sm:text-4xl font-bold text-center mb-12 sm:mb-16 flex items-center justify-center">
                         <span class="mr-3">A Radically</span>
                         <div class="scroller-workflow">
@@ -110,32 +99,28 @@
                         </div>
                         <span class="ml-3">SEO Workflow.</span>
                     </div>
-                    <!-- === END OF ANIMATION === -->
 
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-10 sm:gap-12">
                         <div class="text-center">
                             <div
                                 class="w-16 h-16 mx-auto mb-4 border-2 border-black flex items-center justify-center font-bold text-2xl">
                                 1</div>
-                            <h3 class="font-bold text-xl mb-2">Input</h3>
-                            <p class="text-gray-700">Provide a website URL. Our AI scrapes every page to build a complete
-                                SEO context.</p>
+                            <h3 class="font-bold text-xl mb-2">Discover</h3>
+                            <p class="text-gray-700">FieldNote performs a deep crawl of your site, identifying its platform, structure, and content.</p>
                         </div>
                         <div class="text-center">
                             <div
                                 class="w-16 h-16 mx-auto mb-4 border-2 border-black flex items-center justify-center font-bold text-2xl">
                                 2</div>
-                            <h3 class="font-bold text-xl mb-2">Analyze</h3>
-                            <p class="text-gray-700">We perform a comprehensive analysis of your on-page, technical, and
-                                content SEO.</p>
+                            <h3 class="font-bold text-xl mb-2">Strategize</h3>
+                            <p class="text-gray-700">The agent analyzes the data, calculates an SEO score, and formulates a complete, actionable growth plan.</p>
                         </div>
                         <div class="text-center">
                             <div
                                 class="w-16 h-16 mx-auto mb-4 border-2 border-black flex items-center justify-center font-bold text-2xl">
                                 3</div>
-                            <h3 class="font-bold text-xl mb-2">Automate</h3>
-                            <p class="text-gray-700">Enable automated tasks like meta tag generation, blog creation, and
-                                backlink monitoring.</p>
+                            <h3 class="font-bold text-xl mb-2">Execute</h3>
+                            <p class="text-gray-700">With your approval, FieldNote connects to your CMS and autonomously executes the entire strategy.</p>
                         </div>
                     </div>
                 </div>
@@ -145,50 +130,43 @@
                     <h2 class="text-3xl sm:text-4xl font-bold text-center mb-12">Full-Stack SEO Automation</h2>
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                         <div class="border-2 border-black p-6 bg-white h-full">
-                            <h3 class="font-bold text-lg mb-2">AI-Powered On-Page SEO</h3>
-                            <p class="text-sm">Our agent intelligently analyzes site structure to fix and optimize on-page
-                                elements.</p>
+                            <h3 class="font-bold text-lg mb-2">Full HTML Rewrites</h3>
+                            <p class="text-sm">Our agent rewrites your page content for perfect technical and semantic SEO structure.</p>
                         </div>
                         <div class="border-2 border-black p-6 bg-white h-full">
                             <h3 class="font-bold text-lg mb-2">Automated Meta & Title Tags</h3>
-                            <p class="text-sm">Generate optimized meta and title descriptions for every page, based on
-                                content.</p>
+                            <p class="text-sm">Generate optimized meta descriptions and title tags for every page to maximize click-through rates.</p>
                         </div>
                         <div class="border-2 border-black p-6 bg-white h-full">
-                            <h3 class="font-bold text-lg mb-2">24/7 Blog Automation</h3>
-                            <p class="text-sm">We use your site's context to generate and publish relevant blog articles
-                                automatically.</p>
+                            <h3 class="font-bold text-lg mb-2">Autonomous Content Generation</h3>
+                            <p class="text-sm">FieldNote identifies content gaps and publishes a week of high-quality, relevant blog articles.</p>
                         </div>
                         <div class="border-2 border-black p-6 bg-white h-full">
-                            <h3 class="font-bold text-lg mb-2">Interactive SEO Dashboard</h3>
-                            <p class="text-sm">Manage all your automation tasks, view performance, and configure settings
-                                from one place.</p>
+                            <h3 class="font-bold text-lg mb-2">Conversational AI Dashboard</h3>
+                            <p class="text-sm">Collaborate with the AI agent, review its plans, and approve changes from a single, intuitive interface.</p>
                         </div>
                         <div class="border-2 border-black p-6 bg-white h-full">
-                            <h3 class="font-bold text-lg mb-2">Smart Backlink Analysis</h3>
-                            <p class="text-sm">Monitor your backlink profile and get automated suggestions for new
-                                opportunities.</p>
+                            <h3 class="font-bold text-lg mb-2">Automated Schema Generation</h3>
+                            <p class="text-sm">Generate rich JSON-LD schema for your content to help you stand out in search results.</p>
                         </div>
                         <div class="border-2 border-black p-6 bg-white h-full">
-                            <h3 class="font-bold text-lg mb-2">Continuous Site Monitoring</h3>
-                            <p class="text-sm">Run SEO analysis on a schedule to adapt to website changes and stay
-                                optimized.</p>
+                            <h3 class="font-bold text-lg mb-2">Direct CMS Integration</h3>
+                            <p class="text-sm">FieldNote connects securely to WordPress and other platforms to autonomously apply all approved optimizations.</p>
                         </div>
                     </div>
                 </div>
             </section>
             <section class="py-16 sm:py-20 px-4 sm:px-6 bg-gray-50 border-b-2 border-black">
                 <div class="max-w-4xl mx-auto text-center">
-                    <h2 class="text-3xl sm:text-4xl font-bold text-center mb-8">Ready to Grow Your Traffic?</h2>
-                    <p class="text-gray-700 mb-8">Stop worrying about tedious SEO tasks. Let our AI handle the heavy lifting so you can focus on your business.
-                    </p>
-                    <a href="signin.html" class="inline-block px-8 py-3 border-2 border-black text-lg font-bold hover:bg-black hover:text-white">Start Your Free Trial</a>
+                    <h2 class="text-3xl sm:text-4xl font-bold text-center mb-8">Stop Guessing. Start Growing.</h2>
+                    <p class="text-gray-700 mb-8">Let your personal AI strategist handle the complexity of SEO, so you can focus on running your business.</p>
+                    <a href="signup.html" class="inline-block px-8 py-3 border-2 border-black text-lg font-bold hover:bg-black hover:text-white">Activate Your Agent</a>
                 </div>
             </section>
         </main>
         <footer class="border-t-2 border-black py-8 px-4 sm:px-6 bg-gray-50">
             <div class="max-w-7xl mx-auto text-center text-sm text-gray-600">
-                <p>© 2025 SEO-Pilot Inc. All rights reserved.</p>
+                <p>© 2025 FieldNote Inc. All rights reserved.</p>
             </div>
         </footer>
     </div>
