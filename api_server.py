@@ -3,7 +3,7 @@
 import os, uuid
 from typing import Optional, Dict, Any, List
 from fastapi import FastAPI
-from fastapi.responses import RedirectResponse # Import the RedirectResponse class
+from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from context_store import load_context
@@ -18,7 +18,10 @@ class ChatResponse(BaseModel): messages: List[Dict[str, Any]]
 # --- APP SETUP ---
 app = FastAPI(title="FieldNote API", version="1.0.0") # Let's call it 1.0!
 
-allow_origins = os.getenv("CORS_ALLOW_ORIGINS", "*").split(",")
+allow_origins = [
+    "http://127.0.0.1:8000",
+    "http://localhost:8000",
+]
 app.add_middleware(CORSMiddleware, allow_origins=allow_origins, allow_credentials=True, allow_methods=["*"], allow_headers=["*"])
 
 # --- API ENDPOINTS ---
@@ -51,6 +54,5 @@ async def get_review_data(session_id: str):
     }
 
 # This must come AFTER all other routes
-from fastapi.staticfiles import StaticFiles
 if os.path.isdir("agent"):
     app.mount("/", StaticFiles(directory="agent", html=True), name="static")
