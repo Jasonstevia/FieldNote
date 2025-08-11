@@ -3,13 +3,13 @@
 import os
 import json
 import datetime
-import typing as t
+import typing as t, re
 import google.generativeai as genai
-# We no longer need dotenv here, the server will handle it.
+from dotenv import load_dotenv
 
-# --- Centralized AI Configuration ---
-
+load_dotenv()
 _genai_model = None
+# --- Centralized AI Configuration ---
 
 def genai_model():
     """
@@ -30,7 +30,7 @@ def genai_model():
 
     try:
         genai.configure(api_key=api_key)
-        _genai_model = genai.GenerativeModel("gemini-1.5-flash")
+        _genai_model = genai.GenerativeModel("gemini-2.5-pro")
         print("--- Gemini AI Model configured successfully. ---")
         return _genai_model
     except Exception as e:
@@ -41,10 +41,36 @@ def genai_model():
 def today_iso():
     return datetime.datetime.utcnow().date().isoformat()
 
-def safe_json(text: str) -> t.Optional[dict]:
+def safe_json(text: str) -> t.Optional[t.Union[dict, list]]:
+    """
+    DEFINITIVELY FIXED: More robustly finds and parses a JSON object OR ARRAY from a string,
+    even if it's embedded in markdown.
+    """
     try:
-        clean_text = text.strip().lstrip("```json").rstrip("```")
-        return json.loads(clean_text)
-    except json.JSONDecodeError:
-        print(f"Warning: Failed to decode JSON from AI response: {text[:200]}...")
+        # This regex now looks for either a '{' or a '[' to start the JSON.
+        match = re.search(r'```json\s*([\[\{].*?[\]\}])\s*```', text, re.DOTALL)
+        if match:
+            json_str = match.group(1)
+        else:
+            # Fallback to find the first '{' or '[' and last '}' or ']'
+            start = -1
+            if text.find('{') != -1:
+                start = text.find('{')
+            elif text.find('[') != -1:
+                start = text.find('[')
+
+            end = -1
+            if text.rfind('}') != -1:
+                end = text.rfind('}')
+            elif text.rfind(']') != -1:
+                end = text.rfind(']')
+
+            if start != -1 and end != -1:
+                json_str = text[start:end+1]
+            else:
+                raise json.JSONDecodeError("No JSON object or array found", text, 0)
+
+        return json.loads(json_str)
+    except (json.JSONDecodeError, IndexError) as e:
+        print(f"Warning: Robust JSON decoding failed. Error: {e}. Raw text: {text[:200]}...")
         return None

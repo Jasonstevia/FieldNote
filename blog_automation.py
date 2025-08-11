@@ -17,13 +17,25 @@ class BlogAutomation:
     def schedule_blogs(self, session_id: str, days: int = 7, generate_drafts: bool = True) -> dict:
         ctx = load_context(session_id)
         if not ctx: return {"error": "No snapshot found."}
-        clusters = (ctx.get("agents", {}).get("topical_map", {}).get("clusters") or {})
-        if not clusters: return {"error": "No topical clusters found."}
+        clusters_data = (ctx.get("agents", {}).get("topical_map", {}).get("clusters") or {})
 
-        queue = [
-            {"cluster": name, "title": sub.get("title"), "keywords": sub.get("keywords", [])}
-            for name, cluster in clusters.items() for sub in cluster.get("subtopics", [])
-        ]
+        if isinstance(clusters_data, dict):
+            clusters_list = clusters_data.values()
+        elif isinstance(clusters_data, list):
+            clusters_list = clusters_data
+        else:
+            return {"error": "Topical map data is in an unknown format."}
+        queue = []
+        for cluster in clusters_list:
+            if isinstance(cluster, dict):
+                cluster_name = cluster.get("pillar_page_title", "General")
+                for sub in cluster.get("subtopics", []):
+                    queue.append({
+                        "cluster": cluster_name,
+                        "title": sub.get("title"),
+                        "keywords": sub.get("keywords", [])
+                    })
+
         seen = set()
         queue = [q for q in queue if q["title"] and not (q["title"] in seen or seen.add(q["title"]))]
         

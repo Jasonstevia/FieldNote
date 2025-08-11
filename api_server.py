@@ -2,7 +2,7 @@
 
 import os, uuid
 from typing import Optional, Dict, Any, List
-from fastapi import FastAPI, Response
+from fastapi import FastAPI
 from fastapi.responses import RedirectResponse # Import the RedirectResponse class
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
@@ -23,12 +23,6 @@ app.add_middleware(CORSMiddleware, allow_origins=allow_origins, allow_credential
 
 # --- API ENDPOINTS ---
 
-# THIS IS THE NEW, PERMANENT FIX
-@app.get("/")
-async def root_redirect():
-    """Redirects the root URL ('/') to the main homepage."""
-    return RedirectResponse(url="/index.html")
-
 @app.post("/api/session/start", response_model=StartSessionResponse)
 async def start_session(): return {"session_id": str(uuid.uuid4())[:8]}
 
@@ -41,6 +35,10 @@ async def post_chat_message(session_id: str, body: ChatBody):
 async def execute_changes(session_id: str, body: ExecuteBody):
     logs = await execute_with_keys(session_id, body.creds)
     return {"messages": logs}
+
+@app.get("/api/session/{session_id}/context")
+async def get_context(session_id: str):
+    return load_context(session_id) or {"error" : "No context found for this session."}
 
 @app.get("/api/session/{session_id}/review")
 async def get_review_data(session_id: str):
