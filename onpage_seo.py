@@ -2,7 +2,7 @@
 
 import json
 from bs4 import BeautifulSoup
-from seo_common import genai_model, safe_json, today_iso
+from seo_common import genai_model, generate_with_fallback, safe_json, today_iso
 from context_store import load_context, save_context
 
 class OnPageSEO:
@@ -13,12 +13,28 @@ class OnPageSEO:
     def __init__(self):
         self.name = "onpage_seo"
 
+    def _fallback_schema(self, page: dict, business_name: str) -> dict:
+        return {
+            "@context": "https://schema.org",
+            "@type": "WebPage",
+            "name": page.get("title") or "Web Page",
+            "url": page.get("url"),
+            "description": page.get("meta_description") or page.get("title") or "",
+            "isPartOf": {
+                "@type": "WebSite",
+                "name": business_name or page.get("url", ""),
+                "url": page.get("url"),
+            },
+        }
+
     def analyze_website(self, session_id: str) -> dict:
         ctx = load_context(session_id)
         if not ctx or "website" not in ctx or "pages" not in ctx["website"]:
             return {"error": "No snapshot found. Build the weekly snapshot first."}
 
         pages = ctx["website"]["pages"]
+        max_pages = int(__import__("os").environ.get("DEMO_MAX_PROPOSAL_PAGES", "8"))
+        pages = pages[:max_pages]
         model = genai_model()
         proposals = []
 
@@ -62,7 +78,9 @@ class OnPageSEO:
             ```
             """
             try:
-                resp = model.generate_content(prompt)
+                resp = generate_with_fallback(prompt)
+                if not resp:
+                    raise RuntimeError("LLM unavailable")
                 data = safe_json(resp.text) or {}
                 if data.get("rewritten_html_body") and data.get("json_ld_schema"):
                     proposals.append({
@@ -74,7 +92,12 @@ class OnPageSEO:
                 else:
                     proposals.append({"page_url": url, "error": "LLM failed to generate valid HTML/Schema proposal.", "raw_response": resp.text})
             except Exception as e:
-                proposals.append({"page_url": url, "error": f"LLM error during analysis: {e}"})
+                proposals.append({
+                    "page_url": url,
+                    "reason": "Fallback technical SEO proposal.",
+                    "proposed_html_body": original_html,
+                    "proposed_schema": self._fallback_schema(page, ctx.get("business", {}).get("name", "")),
+                })
 
         ctx.setdefault("agents", {}).setdefault("onpage_seo", {})["proposals"] = proposals
         ctx["agents"]["onpage_seo"]["created_at"] = today_iso()

@@ -16,3 +16,6 @@ yarl
 # Google AI
 google-generativeai
 python-dotenv
+
+# Local testing / FastAPI TestClient
+httpx

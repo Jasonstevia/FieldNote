@@ -7,12 +7,14 @@ from urllib.parse import urljoin, urlparse
 import aiohttp
 from aiolimiter import AsyncLimiter
 from bs4 import BeautifulSoup
+import requests
 import tldextract
 from yarl import URL
 import urllib.robotparser as robotparser
 from context_store import save_context
 # -------- Utility -------- #
 USER_AGENT = "VibeCrawler/1.0 (+https://example.com; contact: ops@vibe.local)"
+MAX_HTML_CHARS = 50000
 
 def normalize_url(base: str, href: str) -> Optional[str]:
     if not href:
@@ -73,22 +75,44 @@ async def read_robots_txt(session: aiohttp.ClientSession, site_root: str) -> Tup
         pass
     return rp, sitemaps
 
-async def fetch_url(session: aiohttp.ClientSession, url: str) -> Optional[Tuple[str, str]]:
+def _requests_fetch_url(url: str) -> Optional[Tuple[str, str]]:
     try:
-        async with session.get(url, headers=HEADERS, allow_redirects=True, timeout=aiohttp.ClientTimeout(total=20)) as resp:
-            if resp.status != 200 or "text/html" not in resp.headers.get("content-type", ""):
-                return None
-            text = await resp.text(errors="ignore")
-            final_url = str(resp.url)
-            return final_url, text
+        resp = requests.get(url, headers=HEADERS, allow_redirects=True, timeout=20)
+        content_type = resp.headers.get("content-type", "").lower()
+        text = resp.text
+        if resp.status_code != 200:
+            return None
+        if "text/html" not in content_type and "<html" not in text.lower():
+            return None
+        return resp.url, text
     except Exception:
         return None
 
+async def fetch_url(session: aiohttp.ClientSession, url: str) -> Optional[Tuple[str, str]]:
+    try:
+        async with session.get(url, headers=HEADERS, allow_redirects=True, timeout=aiohttp.ClientTimeout(total=20)) as resp:
+            content_type = resp.headers.get("content-type", "").lower()
+            text = await resp.text(errors="ignore")
+            if resp.status != 200:
+                return await asyncio.to_thread(_requests_fetch_url, url)
+            if "text/html" not in content_type and "<html" not in text.lower():
+                return await asyncio.to_thread(_requests_fetch_url, url)
+            final_url = str(resp.url)
+            return final_url, text
+    except Exception:
+        return await asyncio.to_thread(_requests_fetch_url, url)
+
 def _identify_platform(html: str) -> str:
     """A simple heuristic to guess the website's platform."""
+    html_lower = html.lower()
     if '/wp-content/' in html or '/wp-json/' in html:
         return "WordPress"
-    if 'content="Webflow"' in html or 'class="w-' in html:
+    if (
+        'content="webflow"' in html_lower
+        or 'webflow.io' in html_lower
+        or 'data-wf-domain=' in html_lower
+        or 'w-webflow-badge' in html_lower
+    ):
         return "Webflow"
     if 'Shopify.theme' in html or 'cdn.shopify.com' in html:
         return "Shopify"
@@ -131,7 +155,7 @@ def extract_page_data(url: str, html: str) -> Dict:
         "h1": h1,
         "h2": h2,
         "internal_links": links,
-        "html": html
+        "html": html[:MAX_HTML_CHARS]
     }
 
 async def parse_sitemap_urls(session: aiohttp.ClientSession, sitemap_url: str, limit: int = 2000) -> List[str]:
@@ -279,6 +303,7 @@ async def build_weekly_snapshot(session_id: str, website_url: str, socials: Opti
             "url": website_url,
             "platform": main_platform,
             "pages": pages,
+            "crawl_errors": result.errors,
         },
         "social": socials or {},
         "business": { "name": urlparse(website_url).hostname.replace("www.", "")},

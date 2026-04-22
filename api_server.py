@@ -53,6 +53,5 @@ async def get_review_data(session_id: str):
         "blog_automation": ctx.get("agents", {}).get("blog_automation", {}).get("schedule", []),
     }
 
-# This must come AFTER all other routes
 if os.path.isdir("agent"):
     app.mount("/", StaticFiles(directory="agent", html=True), name="static")
